@@ -5,6 +5,7 @@ const Account = require('../models/Account');
 const { check,validationResult } = require('express-validator');
 const e = require('express');
 
+
 //registers an user
 router.post('/', async (req, res) => {
     const user = new User({

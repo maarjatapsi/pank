@@ -66,10 +66,89 @@
           }
         }
       }
+    },
+    "/login": {
+      "post": {
+        "tags": [
+          "login"
+        ],
+        "summary": "User logs in",
+        "operationId": "login",
+        "requestBody": {
+          "description": "User credentials used for log in",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": "Error description here"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
+
   "components": {
     "schemas": {
+      "LoginRequest": {
+        "required": [
+          "password",
+          "username"
+        ],
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        },
+        "example": {
+          "username": "user1",
+          "password": "test"
+        }
+      },
+      "LoginResponse": {
+        "required": [
+          "user"
+        ],
+        "type": "object",
+        "properties": {
+          "access_token": {
+            "type": "string"
+          }
+        },
+        "example": {
+          "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ZjU4YmNjNjFiM2E3MTViZDAwZTI4NjQiLCJpYXQiOjE2MDA2MDE1MTcsImV4cCI6MTYwMDY4NzkxN30.N81CP-qA4L8lZ75Mmxpgyvz8HjJsRWOeYKVtGtK0PKw"
+        }
+      },
       "ErrorResponse": {
         "required": [
           "error"
