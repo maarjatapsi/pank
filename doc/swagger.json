@@ -2,6 +2,7 @@
   "openapi": "3.0.1",
   "info": {
     "title": "M & O bank",
+    "version": "1.0.0",
     "description": "Bank api",
     "contact": {
       "email": "maarja.tapsi@khk.ee"
@@ -9,8 +10,7 @@
     "license": {
       "name": "Apache 2.0",
       "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
-    },
-    "version": "1.0.0"
+    }
   },
   "servers": [
     {
@@ -23,12 +23,6 @@
   "paths": {
     "/users": {
       "post": {
-        "tags": [
-          "users"
-        ],
-        "summary": "Create user",
-        "description": "Creates a new user",
-        "operationId": "createUser",
         "requestBody": {
           "description": "Created user object",
           "content": {
@@ -40,19 +34,21 @@
           },
           "required": true
         },
+        "tags": [
+          "users"
+        ],
         "responses": {
           "200": {
-            "description": "Success",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/UserRegistered"
                 }
               }
-            }
+            },
+            "description": "Success"
           },
           "400": {
-            "description": "Bad request",
             "content": {
               "application/json": {
                 "schema": {
@@ -62,18 +58,17 @@
                   "error": "Error description here"
                 }
               }
-            }
+            },
+            "description": "Bad request"
           }
-        }
+        },
+        "operationId": "createUser",
+        "summary": "Create user",
+        "description": "Creates a new user"
       }
     },
     "/login": {
       "post": {
-        "tags": [
-          "login"
-        ],
-        "summary": "User logs in",
-        "operationId": "login",
         "requestBody": {
           "description": "User credentials used for log in",
           "content": {
@@ -85,19 +80,21 @@
           },
           "required": true
         },
+        "tags": [
+          "login"
+        ],
         "responses": {
           "200": {
-            "description": "Success",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/LoginResponse"
                 }
               }
-            }
+            },
+            "description": "Success"
           },
           "400": {
-            "description": "Bad request",
             "content": {
               "application/json": {
                 "schema": {
@@ -107,13 +104,77 @@
                   "error": "Error description here"
                 }
               }
-            }
+            },
+            "description": "Bad request"
           }
-        }
+        },
+        "operationId": "login",
+        "summary": "User logs in"
       }
+    },
+    "/accounts": {
+      "get": {
+        "requestBody": {
+          "description": "",
+          "required": false
+        },
+        "tags": [
+          "account"
+        ],
+        "parameters": [
+          {
+            "name": "auth-jwt-token",
+            "description": "valid token",
+            "schema": {
+              "type": "string"
+            },
+            "in": "header",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountDetails"
+                }
+              }
+            },
+            "description": "Success!"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "operationId": "accountDetails",
+        "summary": "User gets account details"
+      },
+      "parameters": [
+        {
+          "name": "auth-jwt-token",
+          "description": "",
+          "schema": {
+            "type": "string"
+          },
+          "in": "header",
+          "required": true
+        }
+      ]
     }
   },
-
   "components": {
     "schemas": {
       "LoginRequest": {
@@ -209,18 +270,72 @@
             "password": "password"
           }
         }
-      }
-    },
-    "securitySchemes": {
-      "bearerAuth": {
-        "name": "Authorization",
-        "type": "apiKey",
-        "in": "header"
+      },
+      "Token": {
+        "title": "Root Type for accountDetails",
+        "description": "Get account details with token",
+        "required": [
+          "access_token"
+        ],
+        "type": "object",
+        "properties": {
+          "access_token": {
+            "type": "string"
+          }
+        },
+        "example": {
+          "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ZjU4YmNjNjFiM2E3MTViZDAwZTI4NjQiLCJpYXQiOjE2MDA2MDE1MTcsImV4cCI6MTYwMDY4NzkxN30.N81CP-qA4L8lZ75Mmxpgyvz8HjJsRWOeYKVtGtK0PKw"
+        }
+      },
+      "AccountDetails": {
+        "title": "Root Type for AccountDetails",
+        "description": "",
+        "type": "object",
+        "properties": {
+          "account_info": {
+            "type": "object",
+            "properties": {
+              "account_number": {
+                "type": "string"
+              },
+              "balance": {
+                "format": "int32",
+                "type": "integer"
+              },
+              "_id": {
+                "type": "string"
+              },
+              "user": {
+                "type": "string"
+              },
+              "__v": {
+                "format": "int32",
+                "type": "integer"
+              }
+            }
+          }
+        },
+        "example": {
+          "account_info": {
+            "account_number": "EE9710176046599884",
+            "balance": 200,
+            "_id": "5f6dc3f3e779ae00d0fb7060",
+            "user": "5f6dc3f3e779ae00d0fb705f",
+            "__v": 0
+          }
+        }
       }
     },
     "responses": {
       "UnauthorizedError": {
         "description": "Access token is missing or invalid"
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "apiKey",
+        "name": "Authorization",
+        "in": "header"
       }
     }
   }
